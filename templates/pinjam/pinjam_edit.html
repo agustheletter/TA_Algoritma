@@ -1,0 +1,45 @@
+<!-- templates/siswa/siswa_tambah.html -->
+{% extends 'index.html' %}
+
+{% block title %}Tambah Data Siswa{% endblock %}
+
+{% block content %}
+    <h3>Edit Data Siswa</h3>
+    <a href="{{ url_for('pinjam.siswa_tampil') }}" class="btn btn-warning mb-3">Kembali</a>
+    <form method="post">
+        <table>
+            <tr>
+                <td>NIS</td>
+                <td><input type="text" name="nis" value="{{ siswa[1] }}"></td>
+            </tr>
+
+            <tr>
+                <td>Nama</td>
+                <td><input type="text" name="nama_siswa" value="{{ siswa[2] }}"></td>
+            </tr>
+
+            <tr>
+                <td>Kelas</td>
+                <td><input type="text" name="kelas" value="{{ siswa[3] }}"></td>
+            </tr>
+
+            <tr>
+                <td>Alamat</td>
+                <td><input type="text" name="alamat" value="{{ siswa[4] }}"></td>
+            </tr>
+
+            <tr>
+                <td>HP</td>
+                <td><input type="text" name="hp_siswa" value="{{ siswa[5] }}"></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td><button type="submit" class="btn btn-success mb-3" onclick="return confirm('Yakin mau edit siswa ini?')">Update</button></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+{% endblock %}

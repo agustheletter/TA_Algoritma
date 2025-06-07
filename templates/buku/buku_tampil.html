@@ -1,0 +1,65 @@
+<!-- templates/buku/buku_tampil.html -->
+{% extends 'index.html' %}
+
+{% block title %}Data Buku{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daftar Buku</h5>
+            <a href="{{ url_for('buku.buku_tambah') }}" class="btn btn-success btn-sm">Tambah Buku</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabel-buku" class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th align="center">No</th>
+                            <th align="center">Kode Buku</th>
+                            <th align="center">ISBN</th>
+                            <th align="center">Judul</th>
+                            <th align="center">Pengarang</th>
+                            <th align="center">Penerbit</th>
+                            <th align="center">Tahun Terbit</th>
+                            <th align="center">Jumlah</th>
+                            <th align="center">Cover</th>
+                            <th align="center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in buku %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ s['kode_buku'] }}</td>
+                                <td>{{ s['isbn'] }}</td>
+                                <td>{{ s['judul'] }}</td>
+                                <td>{{ s['pengarang'] }}</td>
+                                <td>{{ s['penerbit'] }}</td>
+                                <td>{{ s['tahun_terbit'] }}</td>
+                                <td>{{ s['jumlah'] }}</td>
+                                <td>
+                                    <!-- <img src="{{ url_for('static', filename='gambar/buku/' ~ s[8]) }}" alt="Cover" width="100"> -->
+                                    <img src="{{ url_for('static', filename='gambar/buku/' ~ s['cover'])}}" width="100" height="150">
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('buku.buku_edit', id_buku=s[0]) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{{ url_for('buku.buku_hapus', id_buku=s[0]) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin mau hapus buku ini?')">Hapus</a>
+                                    <a href="{{ url_for('buku.bukudetail_tampil', id_buku=s[0]) }}" class="btn btn-sm btn-primary">Detail</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#tabel-buku').DataTable();
+                    });
+                </script>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

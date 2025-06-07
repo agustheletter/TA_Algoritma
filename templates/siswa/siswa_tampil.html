@@ -1,0 +1,88 @@
+{% extends 'index.html' %}
+
+{% block title %}Data Siswa{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Flash messages alert -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+
+    <!-- <form method="POST" action="{{ url_for('siswa.cetak_batch_kartu') }}" target="_blank"> -->
+    <form method="POST" action="{{ url_for('siswa.cetak_batch_kartu') }}">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Daftar Siswa</h5>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('siswa.siswa_tambah') }}" class="btn btn-success btn-sm">Tambah Siswa</a>
+                    <button type="submit" class="btn btn-info btn-sm">Cetak Kartu</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tabel-siswa" class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>NIS</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Alamat</th>
+                                <th>No HP</th>
+                                <th>Photo</th>
+                                <th>Aksi</th>
+                                <th><input type="checkbox" id="check-all"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in siswa %}
+                            <tr>
+                                <td class="text-center">{{ loop.index }}</td>
+                                <td class="text-center">{{ s['nis'] }}</td>
+                                <td>{{ s['nama_siswa'] }}</td>
+                                <td class="text-center">{{ s['kelas'] }}</td>
+                                <td>{{ s['alamat'] }}</td>
+                                <td>{{ s['hp_siswa'] }}</td>
+                                <td class="text-center">
+                                    <img src="{{ url_for('static', filename='gambar/siswa/' ~ s['photo']) }}" width="100px" height="120px">
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('siswa.siswa_edit', id_siswa=s[0]) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('siswa.siswa_hapus', id_siswa=s[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Yakin mau hapus siswa ini?')">Hapus</a>
+                                    <a href="{{ url_for('siswa.kartu_siswa', id_siswa=s[0]) }}" class="btn btn-info btn-sm">Kartu</a>
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="id_siswa[]" value="{{ s[0] }}" class="check-item">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <script type="text/javascript">
+                        $(document).ready(function() {
+                            $('#tabel-siswa').DataTable();
+
+                            $('#check-all').click(function() {
+                                $('.check-item').prop('checked', this.checked);
+                            });
+                        });
+                    </script>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

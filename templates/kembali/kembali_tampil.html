@@ -1,0 +1,181 @@
+{% extends 'index.html' %}
+
+{% block title %}Data Pinjam{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Form Pengembalian Buku</h5>
+            <a href="{{ url_for('kembali.kembali_list') }}" class="btn btn-success btn-sm">List Pengembalian Buku</a>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" action="{{ url_for('kembali.kembali_tampil') }}">
+                <div class="mb-3 row">
+                    <label for="waktu_kembali" class="col-sm-4 col-form-label text-start">Waktu Kembali</label>
+                    <div class="col-sm-8">
+                        <input type="datetime-local" id="waktu_kembali" name="waktu_kembali" class="form-control" readonly>
+                    </div>
+                </div>
+                
+                <div class="mb-3 row">
+                    <label for="id_siswa" class="col-sm-4 col-form-label text-start">NIS | Nama Siswa</label>
+                    <div class="col-sm-8">
+                        <select id="id_siswa" name="id_siswa" class="form-select" required>
+                            <option></option>
+                            {% for s in siswa %}
+                                <option value="{{ s.id_siswa }}">{{ s.nis }} - {{ s.nama_siswa }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+
+                    <table id="tabel-kembali" class="table table-bordered table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <td>No</td>
+                                <td>Kode Buku</td>
+                                <td>Judul</td>
+                                <td>Petugas</td>
+                                <td>Waktu Pinjam</td>
+                                <td>Seharusnya Kembali</td>
+                                <td>Terlambat</td>
+                                <td>Denda</td>
+                                <td>Pilih</td>
+                            </tr>
+                        </thead>
+                        <tbody id="list-buku-tbody">
+                            {% for buku in daftar_buku %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ buku.kode_bukudetail }}</td>
+                                    <td>{{ buku.judul }}</td>
+                                    <td>{{ buku.petugas }}</td>
+                                    <td>{{ buku.waktu_pinjam }}</td>
+                                    <td>{{ buku.waktu_kembali }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="7" class="text-end"><strong>Total Denda:</strong></td>
+                                <td id="total-denda"><strong>Rp. {{total_denda}}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Yakin untuk mengembalikan buku?')">Proses Pengembalian</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- JS: Select2 + Waktu -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const waktuInput = document.getElementById('waktu_kembali');
+        const now = new Date();
+        const formattedNow = now.toISOString().slice(0,16);
+        waktuInput.value = formattedNow;
+
+        $('#id_siswa').select2({
+            placeholder: 'Pilih Siswa',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Fungsi hitung total denda
+        function hitungTotalDenda() {
+            const checkboxes = document.querySelectorAll('.buku-checkbox');
+            let total = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    total += parseInt(cb.dataset.denda);
+                }
+            });
+
+            document.getElementById('total-denda').innerHTML = `<strong>Rp${total.toLocaleString()}</strong>`;
+        }
+
+        $('#id_siswa').on('change', function () {
+            const siswaId = $(this).val();
+            const daftarBukuTable = document.getElementById('list-buku-tbody');
+
+            if (siswaId) {
+                fetch(`/kembali/get_buku/${siswaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Data diterima:', data);
+                        
+                        daftarBukuTable.innerHTML = '';
+
+                        if (data.length > 0) {
+                            data.forEach((buku, index) => {
+                                const now = new Date();
+                                const waktuPinjam = new Date(buku.waktu_pinjam);
+                                const diffDays = Math.floor((now - waktuPinjam) / (1000 * 60 * 60 * 24));
+                                const batasHari = 7;
+                                const keterlambatan = diffDays > batasHari ? diffDays - batasHari : 0;
+                                const denda = keterlambatan * 1000;
+
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${index + 1}</td>
+                                    <td>${buku.kode_bukudetail}</td>
+                                    <td>${buku.judul}</td>
+                                    <td>${buku.petugas}</td>
+                                    <td>${buku.waktu_pinjam}</td>
+                                    <td>${new Date(waktuPinjam.getTime() + batasHari * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}</td>
+                                    <td>${keterlambatan > 0 ? keterlambatan + ' hari' : '-'}</td>
+                                    <td>${keterlambatan > 0 ? 'Rp' + denda.toLocaleString() : '-'}</td>
+                                    <td>
+                                        <input type="checkbox" class="buku-checkbox" name="buku_terpilih[]" value="${buku.id_bukudetail}" data-denda="${denda}" checked>
+                                    </td>
+                                `;
+
+                                daftarBukuTable.appendChild(row);
+                            });
+
+                            // Pasang event listener untuk checkbox
+                            document.querySelectorAll('.buku-checkbox').forEach(checkbox => {
+                                checkbox.addEventListener('change', hitungTotalDenda);
+                            });
+
+                            // Hitung dan tampilkan total denda otomatis setelah data tampil
+                            hitungTotalDenda();
+
+                        } else {
+                            daftarBukuTable.innerHTML = '<tr><td colspan="9"><em>Tidak ada buku dipinjam.</em></td></tr>';
+                            document.getElementById('total-denda').innerHTML = '<strong>Rp0</strong>';
+                        }
+
+                    })
+                    .catch(error => {
+                        console.error('Gagal memuat data buku:', error);
+                        daftarBukuTable.innerHTML = '<tr><td colspan="9"><em>Gagal memuat data buku.</em></td></tr>';
+                        document.getElementById('total-denda').innerHTML = '<strong>Rp0</strong>';
+                    });
+            } else {
+                daftarBukuTable.innerHTML = '';
+                document.getElementById('total-denda').innerHTML = '<strong>Rp0</strong>';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

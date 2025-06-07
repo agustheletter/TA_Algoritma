@@ -1,0 +1,56 @@
+<!-- templates/buku/buku_tambah.html -->
+{% extends 'index.html' %}
+
+{% block title %}Tambah Data Buku{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tambah Data Buku</h5>
+            <a href="{{ url_for('buku.buku_tampil') }}" class="btn btn-warning btn-sm">Kembali</a>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="kode_buku" class="form-label">Kode Buku</label>
+                    <input type="text" class="form-control" id="kode_buku" name="kode_buku" required>
+                </div>
+                <div class="mb-3">
+                    <label for="isbn" class="form-label">ISBN</label>
+                    <input type="text" class="form-control" id="isbn" name="isbn" required>
+                </div>
+                <div class="mb-3">
+                    <label for="judul" class="form-label">Judul</label>
+                    <input type="text" class="form-control" id="judul" name="judul" required>
+                </div>
+                <div class="mb-3">
+                    <label for="pengarang" class="form-label">Pengarang</label>
+                    <input type="text" class="form-control" id="pengarang" name="pengarang" required>
+                </div>
+                <div class="mb-3">
+                    <label for="penerbit" class="form-label">Penerbit</label>
+                    <input type="text" class="form-control" id="penerbit" name="penerbit" required>
+                </div>
+                <div class="mb-3">
+                    <label for="tahun_terbit" class="form-label">Tahun Terbit</label>
+                    <input type="number" class="form-control" id="tahun_terbit" name="tahun_terbit" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="jumlah" class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" id="jumlah" name="jumlah" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cover" class="form-label">Cover</label>
+                    <input type="file" class="form-control" id="cover" name="cover" required>
+                </div>
+
+                
+                <button type="submit" class="btn btn-success" onclick="return confirm('Apakah data sudah benar?')">Simpan</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

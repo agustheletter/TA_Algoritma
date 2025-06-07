@@ -1,0 +1,72 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<h2>Selamat Datang di Perpustakaan SMK Negeri 1 Cimahi</h2>
+
+<style>
+    .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        width: 100%;
+        background: #f5f5f5;
+        padding: 10px 0;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .marquee-track {
+        display: inline-block;
+        animation: marquee 30s linear infinite;
+        white-space: nowrap;
+    }
+
+    .marquee-item {
+        display: inline-block;
+        width: 200px;
+        margin: 0 10px;
+        vertical-align: top;
+        text-align: center;
+    }
+
+    .marquee-item img {
+        height: 400px;
+        width: 200px;
+        object-fit: cover;
+        border-radius: 5px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .marquee-item strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    @keyframes marquee {
+        0% {
+            transform: translateX(0%);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+</style>
+
+<div class="marquee-container" aria-label="Daftar buku perpustakaan">
+    <div class="marquee-track" aria-live="polite">
+        {% for i in range(2) %} {# Duplikasi konten marquee 2x #}
+            {% for b in buku %}
+                <div class="marquee-item">
+                    <a href="/bukudetail/{{ b[3] }}">
+                        <img src="{{ url_for('static', filename='gambar/buku/' ~ b[1]) }}" alt="{{ b[0] }}">
+                        <strong>{{ b[0] }} (Stok: {{ b[2] }})</strong>
+                    </a>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

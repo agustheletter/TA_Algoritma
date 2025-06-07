@@ -1,0 +1,182 @@
+{% extends 'index.html' %}
+
+{% block title %}Cetak Kartu Siswa{% endblock %}
+
+{% block content %}
+<div class="container mt-4 d-print-none">
+    <h5>Cetak Kartu Anggota Siswa</h5>
+    <button onclick="window.print()" class="btn btn-primary">Cetak Semua Kartu</button>
+    <a href="{{ url_for('siswa.siswa_tampil') }}" class="btn btn-secondary">Kembali</a>
+</div>
+
+
+<div class="print-area">
+    {% for siswa in siswa %}
+        <div class="kartu-siswa">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="kartu-wrapper">
+                <!-- Kiri -->
+                <div class="kartu-kiri">
+                    <img src="{{ url_for('static', filename='gambar/logo.png') }}" class="logo-sekolah mb-1" alt="Logo">
+
+                    <div class="title">
+                        <h5>PERPUSTAKAAN</h5>
+                        <h6>KARTU ANGGOTA</h6>
+                    </div>
+
+                    <div class="info">
+                        <p><strong>NIS</strong>: {{ siswa['nis'] }}</p>
+                        <p><strong>Nama</strong>: {{ siswa['nama_siswa'] }}</p>
+                        <p><strong>Kelas</strong>: {{ siswa['kelas'] }}</p>
+                        <p><strong>HP</strong>: {{ siswa['hp_siswa'] }}</p>
+                    </div>
+                </div>
+
+                <!-- Kanan -->
+                <div class="kartu-kanan">
+                    <img src="{{ url_for('static', filename='gambar/siswa/' ~ siswa['photo']) }}" class="foto-siswa" alt="Foto">
+                    <svg class="barcode-svg" data-value="{{ siswa['nis'] }}"></svg>
+                    <div class="barcode-text">{{ siswa['nis'] }}</div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- STYLE -->
+<style>
+    .print-area {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 0.5cm;
+        padding: 1cm;
+    }
+
+    .kartu-siswa {
+        width: 8.56cm;
+        height: 5.39cm;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        background-color: #fff;
+        padding: 0.3cm;
+        display: flex;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        font-size: 9pt;
+        page-break-inside: avoid;
+    }
+
+    .kartu-wrapper {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: space-between;
+    }
+
+    .kartu-kiri {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 60%;
+    }
+
+    .logo-sekolah {
+        width: 1.5cm;
+        height: auto;
+    }
+
+    .title h5 {
+        font-size: 11pt;
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .title h6 {
+        font-size: 9pt;
+        margin: 0;
+        text-transform: uppercase;
+    }
+
+    .info p {
+        margin: 2px 0;
+    }
+
+    .kartu-kanan {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 35%;
+    }
+
+    .foto-siswa {
+        width: 2.2cm;
+        height: 2.8cm;
+        object-fit: cover;
+        border: 1px solid #000;
+        margin-bottom: 4px;
+    }
+
+    .barcode-svg {
+        width: 2.2cm;
+        height: 0.9cm;
+    }
+
+    .barcode-text {
+        font-size: 8pt;
+        margin-top: 2px;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden !important;
+        }
+
+        .print-area, .print-area * {
+            visibility: visible !important;
+        }
+
+        .print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        @page {
+            size: A4;
+            margin: 0.5cm;
+        }
+    }
+
+</style>
+
+<!-- JSBarcode -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.barcode-svg').forEach(function (svg) {
+            const value = svg.getAttribute('data-value');
+            JsBarcode(svg, value, {
+                format: "CODE128",
+                width: 1.2,
+                height: 40,
+                displayValue: false,
+                margin: 0
+            });
+        });
+    });
+</script>
+{% endblock %}

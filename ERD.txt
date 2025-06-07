@@ -1,0 +1,43 @@
+Entitas dan Atribut
+    SISWA :
+        id_siswa (PK)
+        nis
+        nama_siswa
+        kelas
+        alamat
+        hp_siswa
+
+    BUKU
+        id_buku (PK)
+        kode_buku
+        isbn
+        judul
+        pengarang
+        penerbit
+        tahun_terbit
+        jumlah
+
+    PETUGAS
+        id_petugas (PK)
+        NIP
+        nama_petugas
+        username
+        password
+
+    PEMINJAMAN
+        id_pinjam (PK)
+        id_siswa (FK)
+        id_petugas (FK)
+        waktu_pinjam
+        waktu_kembali
+
+    DETAIL_PEMINJAMAN
+        id_pinjamdetail (PK)
+        id_pinjam (FK)
+        id_buku (FK)
+
+    PENGEMBALIAN
+        id_kembali (PK)
+        id_pinjam (FK)
+        waktu_kembali
+        denda

@@ -1,0 +1,144 @@
+{% extends 'index.html' %}
+
+{% block title %}Tambah Data Pinjam{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Tambah Data Peminjaman</h5>
+            <a href="{{ url_for('pinjam.pinjam_tampil') }}" class="btn btn-light btn-sm">Kembali</a>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="id_siswa" class="form-label">NIS | Nama Siswa</label>
+                    <select id="siswa" name="id_siswa" class="form-select" required>
+                        <option value="">Pilih Siswa</option>
+                        {% for s in siswa %}
+                            <option value="{{ s[0] }}">{{ s[1] }} | {{ s[2] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- <div class="mb-3">
+                    <label for="id_petugas" class="form-label">Petugas</label>
+                    <select name="id_petugas" class="form-select" required>
+                        <option value="">Pilih Petugas</option>
+                        {% for p in petugas %}
+                            <option value="{{ p[0] }}">{{ p[2] }}</option>
+                        {% endfor %}
+                    </select>
+                </div> -->
+
+                <div class="mb-3">
+                    <label for="waktu_pinjam" class="form-label">Waktu Pinjam</label>
+                    <input type="datetime-local" name="waktu_pinjam" id="waktu_pinjam" class="form-control" onchange="setWaktuKembali()" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="waktu_kembali" class="form-label">Waktu Kembali</label>
+                    <input type="datetime-local" name="waktu_kembali" id="waktu_kembali" class="form-control" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Judul Buku</label>
+                    <div id="buku-container">
+                        <div class="input-group mb-2">
+                            <select id="bukudetail" name="id_bukudetail" class="form-select" required>
+                                <option value="">Pilih Buku</option>
+                                {% for b in bukudetail %}
+                                    <option value="{{ b[0] }}">{{ b[2] }} | {{ b[8] }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" onclick="tambahSelectBuku()" class="btn btn-outline-primary">Tambah Buku</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success" onclick="return confirm('Yakin dengan pilihan pinjam ini?')">Simpan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+        setWaktuPinjam();
+    };
+
+    function setWaktuPinjam() {
+        const now = new Date();
+        const waktuPinjamInput = document.getElementById('waktu_pinjam');
+        const tahun = now.getFullYear();
+        const bulan = String(now.getMonth() + 1).padStart(2, '0');
+        const tanggal = String(now.getDate()).padStart(2, '0');
+        const jam = String(now.getHours()).padStart(2, '0');
+        const menit = String(now.getMinutes()).padStart(2, '0');
+        const currentTime = `${tahun}-${bulan}-${tanggal}T${jam}:${menit}`;
+        waktuPinjamInput.value = currentTime;
+        setWaktuKembali();
+    }
+
+    function setWaktuKembali() {
+        const waktuPinjam = new Date(document.getElementById('waktu_pinjam').value);
+        waktuPinjam.setDate(waktuPinjam.getDate() + 7);
+        const tahun = waktuPinjam.getFullYear();
+        const bulan = String(waktuPinjam.getMonth() + 1).padStart(2, '0');
+        const tanggal = String(waktuPinjam.getDate()).padStart(2, '0');
+        const jam = String(waktuPinjam.getHours()).padStart(2, '0');
+        const menit = String(waktuPinjam.getMinutes()).padStart(2, '0');
+        document.getElementById('waktu_kembali').value = `${tahun}-${bulan}-${tanggal}T${jam}:${menit}`;
+    }
+
+    function tambahSelectBuku() {
+        const container = document.getElementById('buku-container');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+
+        const selectHTML = `
+            <select class="form-select bukudetail-select" name="id_bukudetail" required>
+                <option value="">Pilih Buku</option>
+                {% for b in bukudetail %}
+                    <option value="{{ b[0] }}">{{ b[2] }} | {{ b[8] }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-outline-danger" onclick="hapusSelectBuku(this)">Hapus</button>
+        `;
+
+        div.innerHTML = selectHTML;
+        container.appendChild(div);
+
+        // Terapkan select2 ke select yang baru ditambahkan
+        $(div).find('.bukudetail-select').select2({
+            placeholder: 'Pilih Buku',
+            allowClear: true
+        });
+    }
+
+
+
+
+    function hapusSelectBuku(button) {
+        button.parentElement.remove();
+    }
+
+
+    // select2 untuk pilih siswa
+    $(document).ready(function() {
+        $('#siswa').select2({
+            placeholder: 'Pilih Siswa',
+            allowClear: true
+        });
+    });
+
+    // select2 untuk pilih bukudetail
+    $(document).ready(function() {
+        $('#bukudetail').select2({
+            placeholder: 'Pilih Buku',
+            allowClear: true
+        });
+    });
+
+</script>
+{% endblock %}

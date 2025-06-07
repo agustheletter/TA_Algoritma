@@ -1,0 +1,57 @@
+<!-- templates/buku/buku_edit.html -->
+{% extends 'index.html' %}
+
+{% block title %}Edit Data Buku{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-dark d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Edit Data Buku</h5>
+            <a href="{{ url_for('buku.buku_tampil') }}" class="btn btn-warning btn-sm">Kembali</a>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="kode_buku" class="form-label">Kode Buku</label>
+                    <input type="text" class="form-control" id="kode_buku" name="kode_buku" value="{{ buku[1] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="isbn" class="form-label">ISBN</label>
+                    <input type="text" class="form-control" id="isbn" name="isbn" value="{{ buku[2] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="judul" class="form-label">Judul</label>
+                    <input type="text" class="form-control" id="judul" name="judul" value="{{ buku[3] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="pengarang" class="form-label">Pengarang</label>
+                    <input type="text" class="form-control" id="pengarang" name="pengarang" value="{{ buku[4] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="penerbit" class="form-label">Penerbit</label>
+                    <input type="text" class="form-control" id="penerbit" name="penerbit" value="{{ buku[5] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="tahun_terbit" class="form-label">Tahun Terbit</label>
+                    <input type="number" class="form-control" id="tahun_terbit" name="tahun_terbit" value="{{ buku[6] }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="jumlah" class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" id="jumlah" name="jumlah" value="{{ buku[7] }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cover" class="form-label">Cover</label>
+                    <!-- <input type="tex" class="form-control" id="cover" name="cover" value="{{ buku[8] }}" required> -->
+                    <input type="file" class="form-control" id="cover" name="cover" value="{{ buku[8] }}"required>
+                    <!-- <img src="{{ url_for('static', filename='gambar/buku/' ~ buku['8'])}}" width="100" height="150"> -->
+                    
+                </div>
+
+                <button type="submit" class="btn btn-success" onclick="return confirm('Yakin mau edit buku ini?')">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

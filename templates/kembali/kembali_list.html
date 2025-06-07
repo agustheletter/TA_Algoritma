@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+
+{% block title %}List Pengembalian{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Riwayat Pengembalian Buku</h5>
+            <a href="{{ url_for('kembali.kembali_tampil') }}" class="btn btn-success btn-sm">Kembali ke Form Pegembalian</a>
+        </div>
+        <div class="card-body">
+            <table id="tabel-kembalilist" class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>ID Pinjam</th>
+                        <th>NIS | Nama Siswa</th>
+                        <th>Waktu Kembali</th>
+                        <th>Petugas</th>
+                        <th>Judul Buku</th>
+                        <th>Denda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for id_kembali, data in kembali.items() %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ data.id_pinjam }}</td>
+                            <td>{{ data.nis }} | {{ data.nama_siswa }}</td>
+                            <td>{{ data.waktu_kembali }}</td>
+                            <td>{{ data.nama_petugas }}</td>
+                            <td>
+                                <ol class="mb-0">
+                                    {% for detail in data.details %}
+                                        <li>{{ detail.kode_bukudetail }} | {{ detail.judul }}</li>
+                                    {% endfor %}
+                                </ol>
+                            </td>
+                            <td>
+                                <ul class="mb-0 list-unstyled">
+                                    {% for detail in data.details %}
+                                        <li>Rp {{ detail.denda | int | string | replace(',', '.') }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center"><em>Belum ada data pengembalian.</em></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+            
+            <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#tabel-kembalilist').DataTable();
+                    });
+                </script>
+        </div>
+    </div>
+</div>
+{% endblock %}

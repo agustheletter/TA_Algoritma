@@ -1,0 +1,88 @@
+{% extends 'index.html' %}
+
+{% block title %}Data Pinjam{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daftar Peminjaman</h5>
+            <a href="{{ url_for('pinjam.pinjam_tambah') }}" class="btn btn-success btn-sm">Tambah Pinjam</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                {% if pinjam %}
+                <table id="tabel-pinjam" class="table table-bordered table-hover align-middle">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th class="text-center" style="width: 3%;">No</th>
+                            <th class="text-center" style="width: 15%;">NIS | Nama Siswa</th>
+                            <th class="text-center" style="width: 12%;">Waktu Pinjam</th>
+                            <th class="text-center" style="width: 15%;">Waktu Kembali (Estimasi)</th> 
+                            <th class="text-center" style="width: 10%;">Petugas</th>
+                            <th class="text-center" style="width: 25%;">Judul Buku</th>
+                            <th class="text-center" style="width: 20%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in pinjam %}
+                        <tr>
+                            <td class="text-center">{{ loop.index }}</td>
+                            <td>{{ s['nis'] }} | <small>{{ s['nama_siswa'] }}</small></td>
+                            <td class="text-center">{{ s['waktu_pinjam'] }}</td>
+                            <td class="text-center">{{ s['waktu_kembali'] }}</td>
+                            <td>{{ s['nama_petugas'] }}</td>
+                            <td>
+                                <ol class="mb-0 ps-3">
+                                    {% for item in s['daftar_buku'].split(', ') %}
+                                        {% set parts = item.split('|') %}
+                                        <li>
+                                            {{ parts[1] }} | {{ parts[2] }} 
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                            </td>
+
+                            <td>
+                                <ul type="none" class="mb-0 ps-3">
+                                    {% for item in s['daftar_buku'].split(', ') %}
+                                        {% set parts = item.split('|') %}
+                                        <li>
+                                            <small>
+                        
+                                                {% if parts[3] == 'Sudah Dikembalikan' %}
+                                                    <span class="badge bg-success">{{ parts[3] }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning text-dark">{{ parts[3] }}</span>
+                                                {% endif %}
+                                            </small>
+                                            
+                                            {% if parts[3] == 'Masih Dipinjam' %}
+                                            <a href="{{ url_for('pinjam.pinjam_hapus', id_pinjamdetail=parts[0]) }}" 
+                                                class="btn btn-danger btn-xs ms-2" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .70rem;"
+                                                onclick="return confirm('Yakin mau hapus buku {{ parts[2] }} dari pinjaman ini?')">
+                                                Hapus
+                                            </a>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#tabel-pinjam').DataTable();
+                    });
+                </script>
+                {% else %}
+                    <div class="text-center text-muted py-3">Belum ada data peminjaman.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

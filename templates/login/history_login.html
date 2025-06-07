@@ -1,0 +1,50 @@
+<!-- templates/login/logindetail_tampil.html -->
+{% extends 'index.html' %}
+
+{% block title %}Data Login{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Detail Login</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tabel-login" class="table">
+                    <thead>
+                        <tr>
+                            <td>No</td>
+                            <td>ID Login</td>
+                            <td>Nama Petugas</td>
+                            <td>Waktu Login</td>
+                        </tr>
+                    </thead>
+                
+                    <tbody>
+                        {% for hl in history_login %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ hl['id_login'] }}</td>
+                                <td>
+                                    {{ hl['nama_petugas']}}
+                                </td>
+                                
+                                <td>{{ hl['waktu_login'] }}</td>
+
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#tabel-login').DataTable();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
