@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 from database import init_db
 from modul.siswa.routes_siswa import siswa_bp
 from modul.petugas.routes_petugas import petugas_bp
@@ -11,6 +11,7 @@ import sqlite3
 import os
 from functools import wraps
 from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -69,6 +70,9 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'login' in session:
+        return redirect(url_for('index'))  # <- Redirect jika sudah login
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -87,25 +91,30 @@ def login():
             session['login'] = True
             session['nama_petugas'] = petugas['nama_petugas']
             session['id_petugas'] = petugas['id_petugas']
-            session['role'] = petugas['role'] 
+            session['role'] = petugas['role']
 
-            # simpan ke table tbl_login
+            # Simpan ke table login
             with connect_db() as koneksi:
-                cursor = koneksi.cursor()  
-
+                cursor = koneksi.cursor()
                 cursor.execute("""
                     INSERT INTO tbl_login 
                     (id_petugas, waktu_login) 
                     VALUES (?, ?)""", (petugas['id_petugas'], datetime.now()))
                 koneksi.commit()
 
-
             return redirect(url_for('index'))
         else:
             flash('Username atau password salah!', 'danger')
             return redirect(url_for('login'))
 
-    return render_template('login.html')
+    # return render_template('login.html')
+    response = make_response(render_template('login.html'))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
+
+
 
 @app.route('/logout')
 def logout():
